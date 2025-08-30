@@ -11,13 +11,12 @@
     "build:renderer": "webpack --config webpack.renderer.config.js",
     "build:assets": "mkdir -p dist/renderer/styles && cp src/renderer/temple.html dist/renderer/ 2>/dev/null || true && cp -R src/renderer/styles/* dist/renderer/styles/ 2>/dev/null || true",
     "build": "npm run build:main && npm run build:preload && npm run build:renderer && npm run build:assets",
-    "start": "npm run build && electron .",
-    "dev": "npm run build:renderer -- --watch & electron .",
+    "start": "env -u ELECTRON_RUN_AS_NODE npm run build && env -u ELECTRON_RUN_AS_NODE electron .",
+    "dev": "env -u ELECTRON_RUN_AS_NODE npm run build:renderer -- --watch & env -u ELECTRON_RUN_AS_NODE electron .",
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder"
   },
   "dependencies": {
-    "electron": "^30.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -26,6 +25,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "css-loader": "^6.10.0",
+    "electron": "^30.5.1",
     "electron-builder": "^24.13.3",
     "file-loader": "^6.2.0",
     "path-browserify": "^1.0.1",

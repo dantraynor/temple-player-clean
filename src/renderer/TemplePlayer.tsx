@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { PlayerController, PlayerState } from "../player/PlayerController";
 import { providerRegistry } from "../providers";
+import { FileBrowser } from "./components/FileBrowser";
 
 // Temple constants
 const TEMPLE_PALETTE = {
@@ -62,6 +63,7 @@ interface TemplePlayerState {
   bootComplete: boolean;
   showHelp: boolean;
   showFileBrowser: boolean;
+  showEnhancedFileBrowser: boolean;
   showQuoteInterlude: boolean;
   quoteInterludeEnabled: boolean;
   divineIntellectMode: boolean;
@@ -87,6 +89,7 @@ const TemplePlayer: React.FC = () => {
     bootComplete: false,
     showHelp: false,
     showFileBrowser: false,
+    showEnhancedFileBrowser: false,
     showQuoteInterlude: false,
     quoteInterludeEnabled: true,
     divineIntellectMode: false,
@@ -252,7 +255,7 @@ const TemplePlayer: React.FC = () => {
           break;
         case 'F2':
           e.preventDefault();
-          setState(prev => ({ ...prev, showFileBrowser: !prev.showFileBrowser }));
+          setState(prev => ({ ...prev, showEnhancedFileBrowser: !prev.showEnhancedFileBrowser }));
           break;
         case 'F3':
           e.preventDefault();
@@ -291,6 +294,7 @@ const TemplePlayer: React.FC = () => {
             ...prev,
             showHelp: false,
             showFileBrowser: false,
+            showEnhancedFileBrowser: false,
             showQuoteInterlude: false
           }));
           break;
@@ -460,6 +464,28 @@ const TemplePlayer: React.FC = () => {
     }
   }, []);
 
+  const handleEnhancedFileSelect = useCallback(async (filePaths: string[]) => {
+    if (!playerController || filePaths.length === 0) return;
+    
+    // Load files using local provider
+    const provider = providerRegistry.getProvider('local');
+    if (provider && provider.resolveFromLocalPaths) {
+      const tracks = await provider.resolveFromLocalPaths(filePaths);
+      await playerController.loadQueue(tracks);
+      await playerController.play();
+      
+      setState(prev => ({
+        ...prev,
+        playlist: filePaths,
+        showEnhancedFileBrowser: false
+      }));
+    }
+  }, []);
+
+  const handleCloseEnhancedFileBrowser = useCallback(() => {
+    setState(prev => ({ ...prev, showEnhancedFileBrowser: false }));
+  }, []);
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -506,7 +532,7 @@ const TemplePlayer: React.FC = () => {
 
       {/* Menu Bar */}
       <div className="temple-menu-bar">
-        <div className="temple-menu-item" onClick={handleFileSelect}>FILE</div>
+        <div className="temple-menu-item" onClick={() => setState(prev => ({ ...prev, showEnhancedFileBrowser: true }))}>FILE</div>
         <div className="temple-menu-item">EDIT</div>
         <div className="temple-menu-item">SEARCH</div>
         <div className="temple-menu-item">MUSIC</div>
@@ -520,69 +546,119 @@ const TemplePlayer: React.FC = () => {
           GOD SAYS: {state.godSays}
         </div>
 
-        {/* Track Info */}
-        <div className="track-info">
-          <div className="track-title">
-            {state.currentTrack?.title || "NO TRACK LOADED"}
+        {/* Main Desktop Area with Cross */}
+        <div className="temple-desktop">
+          {/* Central Cross - The most important TempleOS element */}
+          <div className="temple-cross">
+            <div className="cross-vertical"></div>
+            <div className="cross-horizontal"></div>
+            <div className="cross-center">✝</div>
           </div>
-          <div className="track-artist">
-            ARTIST: {state.currentTrack?.artist || "UNKNOWN"}
+
+          {/* Desktop Windows/Boxes */}
+          <div className="desktop-window" style={{ top: '20px', left: '20px', width: '180px', height: '120px' }}>
+            <div className="window-title-bar">
+              <span className="window-icon">♪</span>
+              <span className="window-title">MUSIC PLAYER</span>
+              <span className="window-controls">_□X</span>
+            </div>
+            <div className="window-content">
+              <div className="track-title">
+                {state.currentTrack?.title || "NO TRACK LOADED"}
+              </div>
+              <div className="track-artist">
+                ARTIST: {state.currentTrack?.artist || "UNKNOWN"}
+              </div>
+              <div className="track-album">
+                ALBUM: {state.currentTrack?.album || "UNKNOWN"}
+              </div>
+            </div>
           </div>
-          <div className="track-album">
-            ALBUM: {state.currentTrack?.album || "UNKNOWN"}
+
+          <div className="desktop-window" style={{ top: '20px', right: '20px', width: '160px', height: '100px' }}>
+            <div className="window-title-bar">
+              <span className="window-icon">📊</span>
+              <span className="window-title">VISUALIZER</span>
+              <span className="window-controls">_□X</span>
+            </div>
+            <div className="window-content">
+              <div className="mini-visualizer">
+                {visualizerBars.current.slice(0, 8).map((height, index) => (
+                  <div
+                    key={index}
+                    className="mini-visualizer-bar"
+                    style={{ height: `${Math.max(2, height / 3)}px` }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="desktop-window" style={{ bottom: '80px', left: '20px', width: '200px', height: '80px' }}>
+            <div className="window-title-bar">
+              <span className="window-icon">🎛</span>
+              <span className="window-title">CONTROLS</span>
+              <span className="window-controls">_□X</span>
+            </div>
+            <div className="window-content">
+              <div className="mini-controls">
+                <button className="mini-control-button" onClick={handlePrevious}>⏮</button>
+                <button className={`mini-control-button ${state.isPlaying ? 'playing' : ''}`} onClick={handlePlayPause}>
+                  {state.isPlaying ? '⏸' : '▶'}
+                </button>
+                <button className="mini-control-button" onClick={handleNext}>⏭</button>
+              </div>
+              <div className="mini-progress">
+                <div className="mini-progress-fill" style={{ width: `${state.progress * 100}%` }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="desktop-window" style={{ bottom: '80px', right: '20px', width: '160px', height: '80px' }}>
+            <div className="window-title-bar">
+              <span className="window-icon">🔊</span>
+              <span className="window-title">VOLUME</span>
+              <span className="window-controls">_□X</span>
+            </div>
+            <div className="window-content">
+              <div className="volume-display">
+                <span className="volume-label">VOL:</span>
+                <div className="volume-blocks">
+                  {getVolumeBlocks()}
+                </div>
+                <span className="volume-percent">{Math.floor(state.volume * 100)}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Icons */}
+          <div className="desktop-icon" style={{ top: '160px', left: '40px' }}>
+            <div className="icon-image">💿</div>
+            <div className="icon-label">MUSIC</div>
+          </div>
+
+          <div className="desktop-icon" style={{ top: '160px', left: '100px' }}>
+            <div className="icon-image">📁</div>
+            <div className="icon-label">FILES</div>
+          </div>
+
+          <div className="desktop-icon" style={{ top: '160px', left: '160px' }}>
+            <div className="icon-image">⚙</div>
+            <div className="icon-label">SETTINGS</div>
+          </div>
+
+          <div className="desktop-icon" style={{ top: '220px', left: '40px' }}>
+            <div className="icon-image">📖</div>
+            <div className="icon-label">BIBLE</div>
+          </div>
+
+          <div className="desktop-icon" style={{ top: '220px', left: '100px' }}>
+            <div className="icon-image">🐘</div>
+            <div className="icon-label">ELEPHANT</div>
           </div>
         </div>
 
-        {/* Visualizer */}
-        <div className="visualizer">
-          {visualizerBars.current.map((height, index) => (
-            <div 
-              key={index} 
-              className="visualizer-bar" 
-              style={{ 
-                height: `${height}px`,
-                background: index % 2 === 0 ? TEMPLE_PALETTE.CYAN : TEMPLE_PALETTE.LIGHT_CYAN
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Progress Bar */}
-        <div className="progress-bar">
-          <div 
-            className="progress-fill" 
-            style={{ width: `${state.progress * 100}%` }}
-          />
-          <div className="progress-text">
-            {formatTime(state.progress * (state.currentTrack?.duration || 0))} / 
-            {formatTime(state.currentTrack?.duration || 0)}
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="player-controls">
-          <button className="control-button" onClick={handlePrevious}>
-            [&lt;&lt; PREV]
-          </button>
-          <button 
-            className={`control-button ${state.isPlaying ? 'playing' : ''}`} 
-            onClick={handlePlayPause}
-          >
-            {state.isPlaying ? '[|| PAUSE]' : '[&gt; PLAY]'}
-          </button>
-          <button className="control-button" onClick={handleNext}>
-            [NEXT &gt;&gt;]
-          </button>
-        </div>
-
-        {/* Volume */}
-        <div className="volume-meter">
-          <span className="volume-label">VOLUME:</span>
-          <span className="text-cyan">{getVolumeBlocks()}</span>
-          <span className="text-white">{Math.floor(state.volume * 100)}%</span>
-        </div>
-
-        {/* Quote Display */}
+        {/* Quote Display - moved to bottom */}
         <div className="quote-display">
           "{state.currentQuote}"
           <div className="text-gray" style={{ marginTop: '4px' }}>- TERRY A. DAVIS</div>
@@ -592,7 +668,7 @@ const TemplePlayer: React.FC = () => {
       {/* F-Key Bar */}
       <div className="f-keys">
         <div className="f-key"><span>F1</span> HELP</div>
-        <div className="f-key" onClick={handleFileSelect}><span>F2</span> LOAD</div>
+        <div className="f-key" onClick={() => setState(prev => ({ ...prev, showEnhancedFileBrowser: true }))}><span>F2</span> LOAD</div>
         <div className="f-key"><span>F3</span> QUOTES</div>
         <div className="f-key"><span>F5</span> REFRESH</div>
         <div className="f-key"><span>F6</span> DIVINE</div>
@@ -641,6 +717,13 @@ const TemplePlayer: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Enhanced File Browser */}
+      <FileBrowser
+        isVisible={state.showEnhancedFileBrowser}
+        onClose={handleCloseEnhancedFileBrowser}
+        onFileSelect={handleEnhancedFileSelect}
+      />
     </div>
   );
 };
