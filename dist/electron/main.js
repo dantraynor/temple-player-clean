@@ -55,7 +55,7 @@ function createWindow() {
         resizable: false, // Sacred covenant - no resizing!
         frame: false, // We'll draw our own TempleOS frame
         transparent: false,
-        backgroundColor: '#000000', // Start with black
+        backgroundColor: '#AAAAAA', // TempleOS light gray background
         alwaysOnTop: false,
         fullscreenable: false,
         minimizable: true,
