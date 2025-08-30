@@ -1,0 +1,477 @@
+/* TempleOS Authentic Styling - 640x480 16 Color Covenant */
+
+:root {
+  /* TempleOS 16-color VGA palette */
+  --temple-black: #000000;
+  --temple-blue: #0000AA;
+  --temple-green: #00AA00;
+  --temple-cyan: #00AAAA;
+  --temple-red: #AA0000;
+  --temple-magenta: #AA00AA;
+  --temple-brown: #AA5500;
+  --temple-light-gray: #AAAAAA;
+  --temple-dark-gray: #555555;
+  --temple-light-blue: #5555FF;
+  --temple-light-green: #55FF55;
+  --temple-light-cyan: #55FFFF;
+  --temple-light-red: #FF5555;
+  --temple-light-magenta: #FF55FF;
+  --temple-yellow: #FFFF55;
+  --temple-white: #FFFFFF;
+}
+
+/* Main container - exact TempleOS dimensions */
+.temple-container {
+  width: 640px;
+  height: 480px;
+  background: var(--temple-black);
+  color: var(--temple-white);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  line-height: 8px;
+  letter-spacing: 0;
+}
+
+/* Character grid system - 80x60 characters */
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(80, 8px);
+  grid-template-rows: repeat(60, 8px);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.char-cell {
+  width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  line-height: 8px;
+}
+
+/* TempleOS window frame */
+.temple-window {
+  position: absolute;
+  background: var(--temple-black);
+  border: 1px solid var(--temple-white);
+}
+
+.temple-title-bar {
+  height: 16px;
+  background: var(--temple-blue);
+  color: var(--temple-white);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.temple-title-bar .title {
+  flex: 1;
+  padding-left: 4px;
+}
+
+.temple-title-bar .controls {
+  display: flex;
+  gap: 8px;
+}
+
+.temple-title-bar .control-btn {
+  width: 8px;
+  height: 8px;
+  background: var(--temple-light-gray);
+  border: 1px solid var(--temple-white);
+  cursor: pointer;
+}
+
+.temple-title-bar .control-btn:hover {
+  background: var(--temple-white);
+}
+
+/* Menu bar */
+.temple-menu-bar {
+  height: 16px;
+  background: var(--temple-black);
+  color: var(--temple-white);
+  border-bottom: 1px solid var(--temple-white);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.temple-menu-item {
+  padding: 0 8px;
+  cursor: pointer;
+  height: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.temple-menu-item:hover {
+  background: var(--temple-blue);
+  color: var(--temple-white);
+}
+
+.temple-menu-item.active {
+  background: var(--temple-blue);
+  color: var(--temple-yellow);
+}
+
+/* Content area */
+.temple-content {
+  padding: 8px;
+  color: var(--temple-white);
+  background: var(--temple-black);
+  height: calc(100% - 32px);
+  overflow: hidden;
+}
+
+/* Text mode display */
+.text-mode {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  line-height: 8px;
+  white-space: pre;
+  color: var(--temple-white);
+}
+
+.text-cyan { color: var(--temple-cyan); }
+.text-yellow { color: var(--temple-yellow); }
+.text-green { color: var(--temple-light-green); }
+.text-red { color: var(--temple-light-red); }
+.text-blue { color: var(--temple-light-blue); }
+.text-magenta { color: var(--temple-light-magenta); }
+.text-white { color: var(--temple-white); }
+.text-gray { color: var(--temple-light-gray); }
+
+.bg-black { background: var(--temple-black); }
+.bg-blue { background: var(--temple-blue); }
+.bg-cyan { background: var(--temple-cyan); }
+.bg-red { background: var(--temple-red); }
+
+/* ASCII borders */
+.ascii-border {
+  border: none;
+  padding: 8px;
+  position: relative;
+}
+
+.ascii-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+/* Music player specific */
+.player-display {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.track-info {
+  padding: 8px;
+  border: 1px solid var(--temple-white);
+  margin-bottom: 8px;
+  background: var(--temple-black);
+}
+
+.track-title {
+  color: var(--temple-yellow);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.track-artist {
+  color: var(--temple-cyan);
+  text-transform: uppercase;
+}
+
+.track-album {
+  color: var(--temple-light-gray);
+  text-transform: uppercase;
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 16px;
+  border: 1px solid var(--temple-white);
+  background: var(--temple-black);
+  position: relative;
+  margin: 8px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--temple-cyan),
+    var(--temple-cyan) 8px,
+    var(--temple-light-cyan) 8px,
+    var(--temple-light-cyan) 16px
+  );
+  transition: width 0.1s linear;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--temple-white);
+  font-weight: bold;
+  text-shadow: 1px 1px 0 var(--temple-black);
+}
+
+/* Controls */
+.player-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px;
+}
+
+.control-button {
+  padding: 4px 8px;
+  background: var(--temple-black);
+  color: var(--temple-white);
+  border: 1px solid var(--temple-white);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+}
+
+.control-button:hover {
+  background: var(--temple-blue);
+  color: var(--temple-yellow);
+}
+
+.control-button:active {
+  background: var(--temple-cyan);
+  color: var(--temple-black);
+}
+
+.control-button.playing {
+  background: var(--temple-green);
+  color: var(--temple-black);
+}
+
+/* Visualizer */
+.visualizer {
+  height: 64px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--temple-white);
+  background: var(--temple-black);
+  margin: 8px 0;
+}
+
+.visualizer-bar {
+  width: 6px;
+  background: var(--temple-cyan);
+  transition: height 0.1s ease;
+}
+
+/* Volume meter */
+.volume-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+}
+
+.volume-label {
+  color: var(--temple-white);
+  text-transform: uppercase;
+}
+
+.volume-bars {
+  display: flex;
+  gap: 2px;
+}
+
+.volume-bar {
+  width: 8px;
+  height: 8px;
+  background: var(--temple-dark-gray);
+  border: 1px solid var(--temple-white);
+}
+
+.volume-bar.active {
+  background: var(--temple-light-green);
+}
+
+/* God Says display */
+.god-says {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  background: var(--temple-black);
+  border: 1px solid var(--temple-yellow);
+  color: var(--temple-yellow);
+  font-weight: bold;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+/* Quote display */
+.quote-display {
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid var(--temple-cyan);
+  background: var(--temple-black);
+  color: var(--temple-cyan);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Command line */
+.command-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: var(--temple-black);
+  border-top: 1px solid var(--temple-white);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.command-prompt {
+  color: var(--temple-light-green);
+  margin-right: 4px;
+}
+
+.command-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--temple-white);
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.command-cursor {
+  width: 8px;
+  height: 8px;
+  background: var(--temple-white);
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Boot sequence */
+.boot-sequence {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--temple-black);
+  color: var(--temple-white);
+  padding: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  line-height: 10px;
+  white-space: pre;
+  overflow: hidden;
+}
+
+.boot-line {
+  animation: type 0.1s steps(1) forwards;
+  opacity: 0;
+}
+
+@keyframes type {
+  to { opacity: 1; }
+}
+
+/* Help screen */
+.help-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background: var(--temple-black);
+  border: 2px solid var(--temple-white);
+  padding: 16px;
+  color: var(--temple-white);
+  z-index: 1000;
+}
+
+.help-title {
+  color: var(--temple-yellow);
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.help-content {
+  color: var(--temple-white);
+  line-height: 12px;
+}
+
+.help-key {
+  color: var(--temple-cyan);
+  font-weight: bold;
+}
+
+.help-desc {
+  color: var(--temple-light-gray);
+  margin-left: 16px;
+}
+
+/* F-key indicators */
+.f-keys {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: var(--temple-dark-gray);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  border-top: 1px solid var(--temple-white);
+}
+
+.f-key {
+  padding: 0 8px;
+  color: var(--temple-white);
+  font-size: 7px;
+  border-right: 1px solid var(--temple-black);
+}
+
+.f-key span {
+  color: var(--temple-yellow);
+  font-weight: bold;
+}
